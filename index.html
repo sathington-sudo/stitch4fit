@@ -1,732 +1,831 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Scissors, ShoppingBag, Award, ArrowRight, ArrowLeft, Instagram, Facebook, MapPin, Phone, Mail, CheckCircle2 } from 'lucide-react';
-
-export default function App() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('home'); // 'home' or 'alterations'
-  const [selectedService, setSelectedService] = useState('General Alterations / Hemming');
-  const [selectedSuitModel, setSelectedSuitModel] = useState('');
-
-  const contactFormRef = useRef(null);
-
-  // Handle scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Scroll to top on view change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentView]);
-
-  const navLinks = [
-    { name: 'Suit Collection', href: '#suits', view: 'home' },
-    { name: 'Alterations Guide', action: () => setCurrentView('alterations') },
-    { name: 'Our Craft', href: '#about', view: 'home' },
-    { name: 'Contact', href: '#contact', view: 'home' },
-  ];
-
-  const handleNavClick = (link) => {
-    setIsMobileMenuOpen(false);
-    if (link.action) {
-      link.action();
-    } else {
-      setCurrentView('home');
-      // Timeout to allow DOM rendering before scrolling
-      setTimeout(() => {
-        const element = document.querySelector(link.href);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stitch4Fit | Master Tailors & Clothiers</title>
+  
+  <!-- React 18 & Babel CDN (Allows JSX to run directly in the browser) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Georgia', 'ui-serif', 'serif'],
+            sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
         }
-      }, 100);
-    }
-  };
-
-  const handleSuitSelect = (suitName) => {
-    setCurrentView('home');
-    setSelectedService('Purchasing a Suit');
-    setSelectedSuitModel(`Model Selected: ${suitName}`);
-    setTimeout(() => {
-      const contactSec = document.getElementById('contact');
-      if (contactSec) {
-        contactSec.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 150);
-  };
-
-  // Suit collection data with premium Unsplash imagery (fully loaded)
-  const suitCollection = [
-    {
-      id: 'modern-charcoal',
-      name: 'The Executive Charcoal',
-      price: '$199',
-      typicalRent: '$250/weekend',
-      image: 'https://images.unsplash.com/photo-1594938298596-70f594f62bce?auto=format&fit=crop&q=80&w=800',
-      description: 'A timeless, highly versatile classic woven from premium wool-blend. Engineered to breathe comfortably and maintain sharp lines through long workdays or special ceremonies.'
-    },
-    {
-      id: 'midnight-navy',
-      name: 'The Midnight Royal Navy',
-      price: '$219',
-      typicalRent: '$260/weekend',
-      image: 'https://images.unsplash.com/photo-1598808503742-dd34bd0444d9?auto=format&fit=crop&q=80&w=800',
-      description: 'Crisp, commanding, and tailored to frame a sleek, modern silhouette. Perfectly suited for leadership presentation, evening galas, or looking exceptionally sharp.'
-    },
-    {
-      id: 'sand-dune-linen',
-      name: 'The Sand Dune Linen',
-      price: '$189',
-      typicalRent: '$230/weekend',
-      image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800',
-      description: 'An unstructured, lightweight summer-weight fabric. Combines traditional tailoring precision with breathable luxury—ideal for warmer seasons and outdoor social gatherings.'
     }
-  ];
+  </script>
+  
+  <style>
+    /* Prevent raw text flashing before React loads */
+    [v-cloak] { display: none; }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased">
+  
+  <div id="root"></div>
 
-  // Faint background pattern resembling tailoring threads/fabric texture
-  const bgPattern = {
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-  };
+  <!-- Inline SVGs mapped as React components for flawless dependency-free rendering -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-  return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-stone-900 selection:text-stone-50 relative" style={bgPattern}>
-      
-      {/* NAVIGATION */}
-      <nav 
-        className={`fixed w-full z-50 transition-all duration-300 ${
-          isScrolled || currentView !== 'home' ? 'bg-white/90 backdrop-blur-md py-4 shadow-sm border-b border-stone-100' : 'bg-transparent py-6'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-          <button 
-            onClick={() => setCurrentView('home')} 
-            className="text-2xl font-serif font-bold tracking-wider text-stone-900 focus:outline-none"
+    // SVG Icons
+    const MenuIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+    );
+
+    const XIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+    );
+
+    const ScissorsIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="9.8" x2="20" y1="8.2" y2="18.4"></line><line x1="9.8" x2="20" y1="15.8" y2="5.6"></line></svg>
+    );
+
+    const ShoppingBagIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+    );
+
+    const AwardIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+    );
+
+    const ArrowRightIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" x2="19" y1="12" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    );
+
+    const ArrowLeftIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" x2="5" y1="12" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    );
+
+    const MapPinIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    );
+
+    const PhoneIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+    );
+
+    const MailIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    );
+
+    const CheckCircle2Icon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+    );
+
+    const InstagramIcon = ({ size = 22, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+    );
+
+    const FacebookIcon = ({ size = 22, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    );
+
+
+    // App Component
+    function App() {
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+      const [currentView, setCurrentView] = useState('home'); // 'home' or 'alterations'
+      const [selectedService, setSelectedService] = useState('General Alterations / Hemming');
+      const [selectedSuitModel, setSelectedSuitModel] = useState('');
+
+      const contactFormRef = useRef(null);
+
+      // Handle scroll effect for navbar
+      useEffect(() => {
+        const handleScroll = () => {
+          setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      // Scroll to top on view change
+      useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, [currentView]);
+
+      const navLinks = [
+        { name: 'Suit Collection', href: '#suits', view: 'home' },
+        { name: 'Alterations Guide', action: () => setCurrentView('alterations') },
+        { name: 'Our Craft', href: '#about', view: 'home' },
+        { name: 'Contact', href: '#contact', view: 'home' },
+      ];
+
+      const handleNavClick = (link) => {
+        setIsMobileMenuOpen(false);
+        if (link.action) {
+          link.action();
+        } else {
+          setCurrentView('home');
+          setTimeout(() => {
+            const element = document.querySelector(link.href);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 100);
+        }
+      };
+
+      const handleSuitSelect = (suitName) => {
+        setCurrentView('home');
+        setSelectedService('Purchasing a Suit');
+        setSelectedSuitModel(`Model Selected: ${suitName}`);
+        setTimeout(() => {
+          const contactSec = document.getElementById('contact');
+          if (contactSec) {
+            contactSec.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 150);
+      };
+
+      const suitCollection = [
+        {
+          id: 'modern-charcoal',
+          name: 'The Executive Charcoal',
+          price: '$199',
+          typicalRent: '$250/weekend',
+          image: 'https://images.unsplash.com/photo-1594938298596-70f594f62bce?auto=format&fit=crop&q=80&w=800',
+          description: 'A timeless, highly versatile classic woven from premium wool-blend. Engineered to breathe comfortably and maintain sharp lines through long workdays or special ceremonies.'
+        },
+        {
+          id: 'midnight-navy',
+          name: 'The Midnight Royal Navy',
+          price: '$219',
+          typicalRent: '$260/weekend',
+          image: 'https://images.unsplash.com/photo-1598808503742-dd34bd0444d9?auto=format&fit=crop&q=80&w=800',
+          description: 'Crisp, commanding, and tailored to frame a sleek, modern silhouette. Perfectly suited for leadership presentation, evening galas, or looking exceptionally sharp.'
+        },
+        {
+          id: 'sand-dune-linen',
+          name: 'The Sand Dune Linen',
+          price: '$189',
+          typicalRent: '$230/weekend',
+          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800',
+          description: 'An unstructured, lightweight summer-weight fabric. Combines traditional tailoring precision with breathable luxury—ideal for warmer seasons and outdoor social gatherings.'
+        }
+      ];
+
+      const bgPattern = {
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      };
+
+      return (
+        <div className="min-h-screen relative" style={bgPattern}>
+          
+          {/* NAVIGATION */}
+          <nav 
+            className={`fixed w-full z-50 transition-all duration-300 ${
+              isScrolled || currentView !== 'home' ? 'bg-white/95 backdrop-blur-md py-4 shadow-sm border-b border-stone-100' : 'bg-transparent py-6'
+            }`}
           >
-            STITCH<span className="text-stone-400 font-light">4</span>FIT
-          </button>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex space-x-8 items-center">
-            {navLinks.map((link, idx) => (
+            <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
               <button 
-                key={idx} 
-                onClick={() => handleNavClick(link)} 
-                className={`text-sm font-medium transition-colors focus:outline-none ${
-                  currentView === 'alterations' && link.name === 'Alterations Guide' 
-                    ? 'text-stone-900 border-b-2 border-stone-900 pb-1' 
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
+                onClick={() => setCurrentView('home')} 
+                className="text-2xl font-serif font-bold tracking-wider text-stone-900 focus:outline-none"
               >
-                {link.name}
+                STITCH<span className="text-stone-400 font-light">4</span>FIT
               </button>
-            ))}
-            <a 
-              href="#contact" 
-              onClick={(e) => {
-                if (currentView !== 'home') {
-                  e.preventDefault();
-                  setCurrentView('home');
-                  setTimeout(() => {
-                    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }
-              }}
-              className="bg-stone-900 hover:bg-stone-800 text-white px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300"
-            >
-              Book Fitting
-            </a>
-          </div>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="md:hidden text-stone-900 hover:text-stone-600 transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
-
-        {/* Mobile Nav Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-stone-100 shadow-xl py-6 px-6 flex flex-col space-y-6">
-            {navLinks.map((link, idx) => (
-              <button 
-                key={idx} 
-                onClick={() => handleNavClick(link)} 
-                className="text-left text-lg font-medium text-stone-600 hover:text-stone-900 transition-colors focus:outline-none"
-              >
-                {link.name}
-              </button>
-            ))}
-            <a 
-              href="#contact" 
-              className="bg-stone-900 text-center text-white px-6 py-3 rounded-none font-medium"
-              onClick={(e) => {
-                setIsMobileMenuOpen(false);
-                if (currentView !== 'home') {
-                  e.preventDefault();
-                  setCurrentView('home');
-                  setTimeout(() => {
-                    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }
-              }}
-            >
-              Book Fitting
-            </a>
-          </div>
-        )}
-      </nav>
-
-      {/* RENDER VIEW: HOME */}
-      {currentView === 'home' && (
-        <>
-          {/* HERO SECTION */}
-          <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden border-b border-stone-200">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center gap-12">
-              
-              <div className="w-full lg:w-1/2 relative z-10 text-center lg:text-left">
-                <h2 className="text-stone-500 font-medium tracking-widest uppercase mb-4 text-sm">
-                  Master Tailors & Clothiers
-                </h2>
-                <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 leading-tight mb-6">
-                  The Perfect Suit. <br /> The Perfect Fit.
-                </h1>
-                <p className="text-lg text-stone-600 mb-10 max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
-                  Why rent when you can own? Discover our collection of premium suits, ready for everyday professional confidence or spontaneous milestones. Expertly altered in-house to fit you flawlessly.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                  <a 
-                    href="#suits" 
-                    className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-all duration-300 flex items-center justify-center group"
-                  >
-                    Shop Suits
-                    <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
-                  </a>
+              {/* Desktop Nav */}
+              <div className="hidden md:flex space-x-8 items-center">
+                {navLinks.map((link, idx) => (
                   <button 
-                    onClick={() => setCurrentView('alterations')}
-                    className="w-full sm:w-auto border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 px-8 py-4 rounded-none text-base font-medium transition-colors flex items-center justify-center"
+                    key={idx} 
+                    onClick={() => handleNavClick(link)} 
+                    className={`text-sm font-medium transition-colors focus:outline-none ${
+                      currentView === 'alterations' && link.name === 'Alterations Guide' 
+                        ? 'text-stone-900 border-b-2 border-stone-900 pb-1' 
+                        : 'text-stone-600 hover:text-stone-900'
+                    }`}
                   >
-                    View Tailoring Services
+                    {link.name}
                   </button>
-                </div>
-              </div>
-
-              <div className="w-full lg:w-1/2 relative">
-                <div className="absolute inset-0 bg-stone-200 translate-x-4 translate-y-4 rounded-sm"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&q=80&w=1200" 
-                  alt="Elegant tailored suits" 
-                  className="relative z-10 w-full h-[500px] object-cover rounded-sm shadow-xl"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* SERVICES / OFFERINGS SECTION */}
-          <section id="services" className="py-24 bg-white relative border-b border-stone-200">
-            <div className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">What We Do</h2>
-                <div className="w-16 h-0.5 bg-stone-900 mx-auto"></div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {/* Service 1 */}
+                ))}
                 <a 
-                  href="#suits"
-                  className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left block"
+                  href="#contact" 
+                  onClick={(e) => {
+                    if (currentView !== 'home') {
+                      e.preventDefault();
+                      setCurrentView('home');
+                      setTimeout(() => {
+                        document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
+                  }}
+                  className="bg-stone-900 hover:bg-stone-800 text-white px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300"
                 >
-                  <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <ShoppingBag className="text-stone-700 group-hover:text-white transition-colors" size={24} />
-                  </div>
-                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Suit Sales</h3>
-                  <p className="text-stone-600 font-light leading-relaxed mb-4">
-                    Stop renting. We offer a wide selection of premium suits for purchase that are often more affordable than a single rental. Make a smart, permanent addition to your wardrobe.
-                  </p>
-                  <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
-                    Browse the Collection
-                  </span>
+                  Book Fitting
                 </a>
-
-                {/* Service 2 (Clickable Interactivity) */}
-                <button 
-                  onClick={() => setCurrentView('alterations')}
-                  className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden text-left focus:outline-none"
-                >
-                  <div className="absolute top-0 right-0 bg-stone-900 text-xs font-medium px-4 py-1 text-white tracking-wider">
-                    $10 HEMMING
-                  </div>
-                  <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <Scissors className="text-stone-700 group-hover:text-white transition-colors" size={24} />
-                  </div>
-                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3 flex items-center">
-                    Expert Alterations
-                    <ArrowRight size={18} className="ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                  </h3>
-                  <p className="text-stone-600 font-light leading-relaxed mb-4">
-                    From our famous $10 trouser hemming to complex jacket restructuring. Click to view our comprehensive clothing alteration and customization guide.
-                  </p>
-                  <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
-                    Explore Pricing & Guide
-                  </span>
-                </button>
-
-                {/* Service 3 */}
-                <div className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                  <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <Award className="text-stone-700 group-hover:text-white transition-colors" size={24} />
-                  </div>
-                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Versatile Styling</h3>
-                  <p className="text-stone-600 font-light leading-relaxed">
-                    Whether you need a sharp outfit for the office, a polished look for upscale social dinners, or a clean silhouette for daily wear, we ensure you project effortless confidence.
-                  </p>
-                </div>
               </div>
+
+              {/* Mobile Menu Toggle */}
+              <button 
+                className="md:hidden text-stone-900 hover:text-stone-600 transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <XIcon size={28} /> : <MenuIcon size={28} />}
+              </button>
             </div>
-          </section>
 
-          {/* SUIT COLLECTION GALLERY (Fully populated with rich visuals) */}
-          <section id="suits" className="py-24 bg-stone-100/40 border-b border-stone-200 relative" style={bgPattern}>
-            <div className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="text-center mb-16">
-                <span className="text-xs uppercase tracking-widest text-stone-500 font-semibold block mb-2">OWN vs RENT</span>
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">The Suit Collection</h2>
-                <div className="w-16 h-0.5 bg-stone-900 mx-auto"></div>
-                <p className="text-stone-600 font-light mt-4 max-w-xl mx-auto">
-                  A premium wardrobe shouldn't cost standard renting rates. Build permanent equity in your personal presentation.
-                </p>
+            {/* Mobile Nav Dropdown */}
+            {isMobileMenuOpen && (
+              <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-stone-100 shadow-xl py-6 px-6 flex flex-col space-y-6">
+                {navLinks.map((link, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => handleNavClick(link)} 
+                    className="text-left text-lg font-medium text-stone-600 hover:text-stone-900 transition-colors focus:outline-none"
+                  >
+                    {link.name}
+                  </button>
+                ))}
+                <a 
+                  href="#contact" 
+                  className="bg-stone-900 text-center text-white px-6 py-3 rounded-none font-medium"
+                  onClick={(e) => {
+                    setIsMobileMenuOpen(false);
+                    if (currentView !== 'home') {
+                      e.preventDefault();
+                      setCurrentView('home');
+                      setTimeout(() => {
+                        document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
+                  }}
+                >
+                  Book Fitting
+                </a>
               </div>
+            )}
+          </nav>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {suitCollection.map((suit) => (
-                  <div key={suit.id} className="bg-white border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
-                    <div>
-                      <div className="relative h-96 overflow-hidden">
-                        <img 
-                          src={suit.image} 
-                          alt={suit.name} 
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        />
+          {/* RENDER VIEW: HOME */}
+          {currentView === 'home' && (
+            <>
+              {/* HERO SECTION */}
+              <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden border-b border-stone-200">
+                <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center gap-12">
+                  
+                  <div className="w-full lg:w-1/2 relative z-10 text-center lg:text-left">
+                    <h2 className="text-stone-500 font-medium tracking-widest uppercase mb-4 text-sm">
+                      Master Tailors & Clothiers
+                    </h2>
+                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 leading-tight mb-6">
+                      The Perfect Suit. <br /> The Perfect Fit.
+                    </h1>
+                    <p className="text-lg text-stone-600 mb-10 max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+                      Why rent when you can own? Discover our collection of premium suits, ready for everyday professional confidence or spontaneous milestones. Expertly altered in-house to fit you flawlessly.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                      <a 
+                        href="#suits" 
+                        className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-all duration-300 flex items-center justify-center group text-center"
+                      >
+                        Shop Suits
+                        <ArrowRightIcon className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
+                      </a>
+                      <button 
+                        onClick={() => setCurrentView('alterations')}
+                        className="w-full sm:w-auto border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 px-8 py-4 rounded-none text-base font-medium transition-colors flex items-center justify-center"
+                      >
+                        View Tailoring Services
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="w-full lg:w-1/2 relative">
+                    <div className="absolute inset-0 bg-stone-200 translate-x-4 translate-y-4 rounded-sm"></div>
+                    <img 
+                      src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&q=80&w=1200" 
+                      alt="Elegant tailored suits" 
+                      className="relative z-10 w-full h-[500px] object-cover rounded-sm shadow-xl"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* SERVICES / OFFERINGS SECTION */}
+              <section id="services" className="py-24 bg-white relative border-b border-stone-200">
+                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                  <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">What We Do</h2>
+                    <div className="w-16 h-0.5 bg-stone-900 mx-auto"></div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    {/* Service 1 */}
+                    <a 
+                      href="#suits"
+                      className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left block"
+                    >
+                      <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <ShoppingBagIcon className="text-stone-700 group-hover:text-white transition-colors" size={24} />
                       </div>
-                      <div className="p-8">
-                        <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">{suit.name}</h3>
-                        <p className="text-stone-500 text-sm font-light leading-relaxed mb-6">{suit.description}</p>
-                        
-                        <div className="grid grid-cols-2 border-t border-b border-stone-100 py-4 mb-6">
-                          <div>
-                            <span className="text-xs uppercase tracking-wider text-stone-400 block">Buy & Own</span>
-                            <span className="text-xl font-bold text-stone-900">{suit.price}</span>
+                      <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Suit Sales</h3>
+                      <p className="text-stone-600 font-light leading-relaxed mb-4">
+                        Stop renting. We offer a wide selection of premium suits for purchase that are often more affordable than a single rental. Make a smart, permanent addition to your wardrobe.
+                      </p>
+                      <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
+                        Browse the Collection
+                      </span>
+                    </a>
+
+                    {/* Service 2 (Clickable Interactivity) */}
+                    <button 
+                      onClick={() => setCurrentView('alterations')}
+                      className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden text-left focus:outline-none"
+                    >
+                      <div className="absolute top-0 right-0 bg-stone-900 text-xs font-medium px-4 py-1 text-white tracking-wider">
+                        $10 HEMMING
+                      </div>
+                      <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <ScissorsIcon className="text-stone-700 group-hover:text-white transition-colors" size={24} />
+                      </div>
+                      <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3 flex items-center">
+                        Expert Alterations
+                        <ArrowRightIcon size={18} className="ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                      </h3>
+                      <p className="text-stone-600 font-light leading-relaxed mb-4">
+                        From our famous $10 trouser hemming to complex jacket restructuring. Click to view our comprehensive clothing alteration and customization guide.
+                      </p>
+                      <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
+                        Explore Pricing & Guide
+                      </span>
+                    </button>
+
+                    {/* Service 3 */}
+                    <div className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                      <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <AwardIcon className="text-stone-700 group-hover:text-white transition-colors" size={24} />
+                      </div>
+                      <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Versatile Styling</h3>
+                      <p className="text-stone-600 font-light leading-relaxed">
+                        Whether you need a sharp outfit for the office, a polished look for upscale social dinners, or a clean silhouette for daily wear, we ensure you project effortless confidence.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SUIT COLLECTION GALLERY */}
+              <section id="suits" className="py-24 bg-stone-100/40 border-b border-stone-200 relative">
+                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                  <div className="text-center mb-16">
+                    <span className="text-xs uppercase tracking-widest text-stone-500 font-semibold block mb-2">OWN vs RENT</span>
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">The Suit Collection</h2>
+                    <div className="w-16 h-0.5 bg-stone-900 mx-auto"></div>
+                    <p className="text-stone-600 font-light mt-4 max-w-xl mx-auto">
+                      A premium wardrobe shouldn't cost standard renting rates. Build permanent equity in your personal presentation.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {suitCollection.map((suit) => (
+                      <div key={suit.id} className="bg-white border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="relative h-96 overflow-hidden">
+                            <img 
+                              src={suit.image} 
+                              alt={suit.name} 
+                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                            />
                           </div>
-                          <div className="border-l border-stone-100 pl-4">
-                            <span className="text-xs uppercase tracking-wider text-stone-400 block">Typical Rental</span>
-                            <span className="text-stone-500 text-sm line-through">{suit.typicalRent}</span>
+                          <div className="p-8">
+                            <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">{suit.name}</h3>
+                            <p className="text-stone-500 text-sm font-light leading-relaxed mb-6">{suit.description}</p>
+                            
+                            <div className="grid grid-cols-2 border-t border-b border-stone-100 py-4 mb-6">
+                              <div>
+                                <span className="text-xs uppercase tracking-wider text-stone-400 block">Buy & Own</span>
+                                <span className="text-xl font-bold text-stone-900">{suit.price}</span>
+                              </div>
+                              <div className="border-l border-stone-100 pl-4">
+                                <span className="text-xs uppercase tracking-wider text-stone-400 block">Typical Rental</span>
+                                <span className="text-stone-500 text-sm line-through">{suit.typicalRent}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
+                        
+                        <div className="px-8 pb-8">
+                          <button 
+                            onClick={() => handleSuitSelect(suit.name)}
+                            className="w-full bg-stone-900 hover:bg-stone-800 text-white text-center py-3 text-sm font-medium transition-colors block"
+                          >
+                            Select for Fitting
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* ABOUT SECTION */}
+              <section id="about" className="py-24 relative">
+                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                  <div className="flex flex-col lg:flex-row items-center gap-16">
+                    <div className="w-full lg:w-1/2 flex gap-4">
+                      <div className="w-1/2 mt-12">
+                         <img 
+                          src="https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&q=80&w=600" 
+                          alt="Tailor threading needle" 
+                          className="w-full h-80 object-cover rounded-sm shadow-md"
+                        />
+                      </div>
+                      <div className="w-1/2">
+                        <img 
+                          src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600" 
+                          alt="Businessman in sharp suit" 
+                          className="w-full h-96 object-cover rounded-sm shadow-xl"
+                        />
                       </div>
                     </div>
                     
-                    <div className="px-8 pb-8">
-                      <button 
-                        onClick={() => handleSuitSelect(suit.name)}
-                        className="w-full bg-stone-900 hover:bg-stone-800 text-white text-center py-3 text-sm font-medium transition-colors block"
-                      >
-                        Select for Fitting
-                      </button>
+                    <div className="w-full lg:w-1/2 bg-white p-8 md:p-12 shadow-sm border border-stone-100">
+                      <h4 className="text-stone-500 font-medium tracking-widest uppercase mb-2 text-sm">The Stitch4Fit Standard</h4>
+                      <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-6">
+                        Craftsmanship You Can Trust
+                      </h2>
+                      <p className="text-stone-600 text-lg font-light mb-6 leading-relaxed">
+                        Whether you're purchasing a brand new suit from our collection or bringing in your favorite pair of trousers for a quick hem, our philosophy remains the same: the fit is everything.
+                      </p>
+                      <p className="text-stone-600 text-lg font-light mb-8 leading-relaxed">
+                        We bridge the gap between premium menswear retail and traditional tailoring. Walk in to browse our suit selection, and walk out with a garment perfectly tailored to your exact measurements.
+                      </p>
+                      
+                      <div className="flex items-center gap-4 border-l-2 border-stone-900 pl-4">
+                        <p className="text-stone-800 font-serif italic text-lg">
+                          "A suit should never feel like a uniform; it should feel like it was made just for you."
+                        </p>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ABOUT SECTION */}
-          <section id="about" className="py-24 relative">
-            <div className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="flex flex-col lg:flex-row items-center gap-16">
-                <div className="w-full lg:w-1/2 flex gap-4">
-                  <div className="w-1/2 mt-12">
-                     <img 
-                      src="https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&q=80&w=600" 
-                      alt="Tailor threading needle" 
-                      className="w-full h-80 object-cover rounded-sm shadow-md"
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <img 
-                      src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600" 
-                      alt="Businessman in sharp suit" 
-                      className="w-full h-96 object-cover rounded-sm shadow-xl"
-                    />
-                  </div>
                 </div>
+              </section>
+            </>
+          )}
+
+          {/* RENDER VIEW: ALTERATIONS SUB-PAGE */}
+          {currentView === 'alterations' && (
+            <section className="pt-32 pb-24 relative">
+              <div className="max-w-5xl mx-auto px-6 md:px-12">
                 
-                <div className="w-full lg:w-1/2 bg-white p-8 md:p-12 shadow-sm border border-stone-100">
-                  <h4 className="text-stone-500 font-medium tracking-widest uppercase mb-2 text-sm">The Stitch4Fit Standard</h4>
-                  <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-6">
-                    Craftsmanship You Can Trust
-                  </h2>
-                  <p className="text-stone-600 text-lg font-light mb-6 leading-relaxed">
-                    Whether you're purchasing a brand new suit from our collection or bringing in your favorite pair of trousers for a quick hem, our philosophy remains the same: the fit is everything.
-                  </p>
-                  <p className="text-stone-600 text-lg font-light mb-8 leading-relaxed">
-                    We bridge the gap between premium menswear retail and traditional tailoring. Walk in to browse our suit selection, and walk out with a garment perfectly tailored to your exact measurements.
-                  </p>
-                  
-                  <div className="flex items-center gap-4 border-l-2 border-stone-900 pl-4">
-                    <p className="text-stone-800 font-serif italic text-lg">
-                      "A suit should never feel like a uniform; it should feel like it was made just for you."
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </>
-      )}
-
-      {/* RENDER VIEW: ALTERATIONS SUB-PAGE */}
-      {currentView === 'alterations' && (
-        <section className="pt-32 pb-24 relative" style={bgPattern}>
-          <div className="max-w-5xl mx-auto px-6 md:px-12">
-            
-            {/* Back Button */}
-            <button 
-              onClick={() => setCurrentView('home')}
-              className="inline-flex items-center text-stone-500 hover:text-stone-900 mb-8 font-medium transition-colors group focus:outline-none"
-            >
-              <ArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" size={18} />
-              Back to Home
-            </button>
-
-            {/* Editorial Header */}
-            <div className="bg-white p-8 md:p-16 border border-stone-200/60 shadow-sm mb-12">
-              <span className="text-stone-400 uppercase tracking-widest font-medium text-xs block mb-4">
-                Tailoring & Fit Guide
-              </span>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold text-stone-900 mb-6 leading-tight">
-                Common Tailoring <br/>& Clothing Alterations
-              </h1>
-              <p className="text-lg md:text-xl text-stone-600 font-light leading-relaxed mb-8">
-                You want to dress to impress, and you’ve found a beautiful garment. However, if the fit isn't quite seamless, the impact is lost. Now you face a classic choice: do you settle for off-the-rack standard, or invest a little care to make it fit you perfectly?
-              </p>
-              <p className="text-stone-600 font-light leading-relaxed">
-                You don't need a personal stylist to stand out. The true secret to exceptional presentation lies in how your clothes drape. At Stitch4Fit, our master alterations emphasize and perfect your unique silhouette, turning any standard garment into your personal trademark.
-              </p>
-            </div>
-
-            {/* Graphic Collage */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-              <img 
-                src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800" 
-                alt="Expert tailoring alignment" 
-                className="w-full h-80 object-cover rounded-sm shadow-md"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1617331721458-bd3ce3e9be66?auto=format&fit=crop&q=80&w=800" 
-                alt="Suit materials and measuring tools" 
-                className="w-full h-80 object-cover rounded-sm shadow-md"
-              />
-            </div>
-
-            {/* Why Choose Alterations */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-serif font-bold text-stone-900 mb-8 border-b border-stone-200 pb-3">
-                Why Consider Alterations?
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="flex gap-4">
-                  <CheckCircle2 className="text-stone-950 shrink-0 mt-1" size={20} />
-                  <div>
-                    <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Completely Custom Fit</h4>
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      Transform generic rack sizes to conform perfectly to your shoulders, arms, chest, and legs. Fit is a reflection of self-respect.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <CheckCircle2 className="text-stone-950 shrink-0 mt-1" size={20} />
-                  <div>
-                    <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Preserve Your Classic Favorites</h4>
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      Before letting go of treasured clothing due to subtle changes in fit, utilize our craftsmanship to breathe fresh life into old favorites.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <CheckCircle2 className="text-stone-950 shrink-0 mt-1" size={20} />
-                  <div>
-                    <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Sustainable & Conscious Style</h4>
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      In a world dominated by fast, disposable items, choosing to tailor and maintain what you have is both a mark of luxury and a sustainable philosophy.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <CheckCircle2 className="text-stone-950 shrink-0 mt-1" size={20} />
-                  <div>
-                    <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Unlimited Versatility</h4>
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      Whether you prefer customized modern slim fits, modern tapered lines, zippers instead of traditional buttons, or sleeve modifications—anything is possible.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Common Services Breakdown */}
-            <div className="bg-white border border-stone-200 p-8 md:p-12 mb-16">
-              <h2 className="text-3xl font-serif font-bold text-stone-900 mb-8 text-center">
-                Most Popular Services & Guides
-              </h2>
-
-              <div className="space-y-12">
-                {/* Item 1 */}
-                <div className="border-b border-stone-100 pb-8 flex flex-col md:flex-row gap-6">
-                  <div className="md:w-1/3">
-                    <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 01</span>
-                    <h3 className="text-xl font-serif font-bold text-stone-900">Hemming Trousers</h3>
-                    <div className="mt-2 inline-block bg-stone-100 text-stone-800 text-xs font-semibold px-3 py-1">
-                      Starting at $10
-                    </div>
-                  </div>
-                  <div className="md:w-2/3">
-                    <p className="text-stone-600 text-sm font-light leading-relaxed mb-4">
-                      The single most essential alteration. Pants should break gracefully right at the front of your footwear, allowing a clean transition to the floor. Pooling, dragging fabric ruins an otherwise pristine look. 
-                    </p>
-                    <p className="text-stone-500 text-xs italic">
-                      Tip: For the absolute best results, try washing and drying your trousers once or twice prior to bringing them in to account for initial fabric shrinkage.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 2 */}
-                <div className="border-b border-stone-100 pb-8 flex flex-col md:flex-row gap-6">
-                  <div className="md:w-1/3">
-                    <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 02</span>
-                    <h3 className="text-xl font-serif font-bold text-stone-900">Tapering Trouser Legs</h3>
-                  </div>
-                  <div className="md:w-2/3">
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      Avoid the bulky, outdated "ballooning" look. By tapering your trousers smoothly from knee to ankle, we create a slim, tailored profile that matches your natural posture and looks effortlessly polished.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 3 */}
-                <div className="pb-4 flex flex-col md:flex-row gap-6">
-                  <div className="md:w-1/3">
-                    <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 03</span>
-                    <h3 className="text-xl font-serif font-bold text-stone-900">Sleeve Shortening</h3>
-                  </div>
-                  <div className="md:w-2/3">
-                    <p className="text-stone-600 text-sm font-light leading-relaxed">
-                      Proper arm alignment is key to looking balanced. Wearing jacket sleeves that are too long suggests you're wearing an oversized hand-me-down. Ideally, your shirt cuffs should peek out exactly 1/4" to 1/2" beyond your jacket hem.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Alterations CTA */}
-            <div className="text-center bg-stone-900 text-white p-8 md:p-12">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold mb-4">Let us do it right the first time.</h3>
-              <p className="text-stone-400 text-sm font-light max-w-lg mx-auto mb-8">
-                Ready to transform your clothes into custom garments? Stop by our studio with your clothing today, or book a styling session.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <button 
-                  onClick={() => {
-                    setCurrentView('home');
-                    setTimeout(() => {
-                      document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  }}
-                  className="bg-white text-stone-900 px-6 py-3 font-medium hover:bg-stone-100 transition-colors"
-                >
-                  Schedule a Fitting
-                </button>
+                {/* Back Button */}
                 <button 
                   onClick={() => setCurrentView('home')}
-                  className="border border-stone-700 text-white px-6 py-3 font-medium hover:border-white transition-colors"
+                  className="inline-flex items-center text-stone-500 hover:text-stone-900 mb-8 font-medium transition-colors group focus:outline-none"
                 >
-                  Return to Home
+                  <ArrowLeftIcon className="mr-2 group-hover:-translate-x-1 transition-transform" size={18} />
+                  Back to Home
                 </button>
-              </div>
-            </div>
 
-          </div>
-        </section>
-      )}
+                {/* Editorial Header */}
+                <div className="bg-white p-8 md:p-16 border border-stone-200/60 shadow-sm mb-12">
+                  <span className="text-stone-400 uppercase tracking-widest font-medium text-xs block mb-4">
+                    Tailoring & Fit Guide
+                  </span>
+                  <h1 className="text-4xl md:text-6xl font-serif font-bold text-stone-900 mb-6 leading-tight">
+                    Common Tailoring <br/>& Clothing Alterations
+                  </h1>
+                  <p className="text-lg md:text-xl text-stone-600 font-light leading-relaxed mb-8">
+                    You want to dress to impress, and you’ve found a beautiful garment. However, if the fit isn't quite seamless, the impact is lost. Now you face a classic choice: do you settle for off-the-rack standard, or invest a little care to make it fit you perfectly?
+                  </p>
+                  <p className="text-stone-600 font-light leading-relaxed">
+                    You don't need a personal stylist to stand out. The true secret to exceptional presentation lies in how your clothes drape. At Stitch4Fit, our master alterations emphasize and perfect your unique silhouette, turning any standard garment into your personal trademark.
+                  </p>
+                </div>
 
-      {/* CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-white border-t border-stone-200" ref={contactFormRef}>
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex flex-col lg:flex-row gap-16">
-            
-            {/* Contact Info */}
-            <div className="w-full lg:w-1/3">
-              <h2 className="text-4xl font-serif font-bold text-stone-900 mb-6">Visit the Shop</h2>
-              <p className="text-stone-600 font-light mb-10">
-                Drop by to browse our suit collection, get measured, or drop off garments for alteration. Walk-ins are always welcome.
-              </p>
-              
-              <div className="space-y-8">
-                <div className="flex items-start group">
-                  <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <MapPin className="text-stone-700 group-hover:text-white transition-colors" size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-stone-900 font-medium mb-1">Storefront & Studio</h4>
-                    <p className="text-stone-600 font-light text-sm">123 Tailor Ave.<br/>Style District, City 10012</p>
-                  </div>
+                {/* Graphic Collage */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800" 
+                    alt="Expert tailoring alignment" 
+                    className="w-full h-80 object-cover rounded-sm shadow-md"
+                  />
+                  <img 
+                    src="https://images.unsplash.com/photo-1617331721458-bd3ce3e9be66?auto=format&fit=crop&q=80&w=800" 
+                    alt="Suit materials and measuring tools" 
+                    className="w-full h-80 object-cover rounded-sm shadow-md"
+                  />
                 </div>
-                
-                <div className="flex items-start group">
-                  <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <Phone className="text-stone-700 group-hover:text-white transition-colors" size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-stone-900 font-medium mb-1">Call Us</h4>
-                    <p className="text-stone-600 font-light text-sm">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start group">
-                  <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
-                    <Mail className="text-stone-700 group-hover:text-white transition-colors" size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-stone-900 font-medium mb-1">Email</h4>
-                    <p className="text-stone-600 font-light text-sm">hello@stitch4fit.com</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Light Form */}
-            <div className="w-full lg:w-2/3 bg-stone-50 p-8 md:p-12 border border-stone-200 rounded-sm">
-              <h3 className="text-2xl font-serif font-bold text-stone-900 mb-6">Send an Inquiry</h3>
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">First Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
-                      placeholder="John"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">Last Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
-                      placeholder="Doe"
-                    />
+                {/* Why Choose Alterations */}
+                <div className="mb-16">
+                  <h2 className="text-3xl font-serif font-bold text-stone-900 mb-8 border-b border-stone-200 pb-3">
+                    Why Consider Alterations?
+                  </h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="flex gap-4">
+                      <CheckCircle2Icon className="text-stone-950 shrink-0 mt-1" size={20} />
+                      <div>
+                        <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Completely Custom Fit</h4>
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          Transform generic rack sizes to conform perfectly to your shoulders, arms, chest, and legs. Fit is a reflection of self-respect.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <CheckCircle2Icon className="text-stone-950 shrink-0 mt-1" size={20} />
+                      <div>
+                        <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Preserve Your Classic Favorites</h4>
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          Before letting go of treasured clothing due to subtle changes in fit, utilize our craftsmanship to breathe fresh life into old favorites.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <CheckCircle2Icon className="text-stone-950 shrink-0 mt-1" size={20} />
+                      <div>
+                        <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Sustainable & Conscious Style</h4>
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          In a world dominated by fast, disposable items, choosing to tailor and maintain what you have is both a mark of luxury and a sustainable philosophy.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <CheckCircle2Icon className="text-stone-950 shrink-0 mt-1" size={20} />
+                      <div>
+                        <h4 className="font-serif font-bold text-stone-900 text-lg mb-2">Unlimited Versatility</h4>
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          Whether you prefer customized modern slim fits, modern tapered lines, zippers instead of traditional buttons, or sleeve modifications—anything is possible.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">Email Address</label>
-                    <input 
-                      type="email" 
-                      className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
-                      placeholder="john@example.com"
-                    />
+
+                {/* Common Services Breakdown */}
+                <div className="bg-white border border-stone-200 p-8 md:p-12 mb-16">
+                  <h2 className="text-3xl font-serif font-bold text-stone-900 mb-8 text-center">
+                    Most Popular Services & Guides
+                  </h2>
+
+                  <div className="space-y-12">
+                    {/* Item 1 */}
+                    <div className="border-b border-stone-100 pb-8 flex flex-col md:flex-row gap-6">
+                      <div className="md:w-1/3">
+                        <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 01</span>
+                        <h3 className="text-xl font-serif font-bold text-stone-900">Hemming Trousers</h3>
+                        <div className="mt-2 inline-block bg-stone-100 text-stone-800 text-xs font-semibold px-3 py-1">
+                          Starting at $10
+                        </div>
+                      </div>
+                      <div className="md:w-2/3">
+                        <p className="text-stone-600 text-sm font-light leading-relaxed mb-4">
+                          The single most essential alteration. Pants should break gracefully right at the front of your footwear, allowing a clean transition to the floor. Pooling, dragging fabric ruins an otherwise pristine look. 
+                        </p>
+                        <p className="text-stone-500 text-xs italic">
+                          Tip: For the absolute best results, try washing and drying your trousers once or twice prior to bringing them in to account for initial fabric shrinkage.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Item 2 */}
+                    <div className="border-b border-stone-100 pb-8 flex flex-col md:flex-row gap-6">
+                      <div className="md:w-1/3">
+                        <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 02</span>
+                        <h3 className="text-xl font-serif font-bold text-stone-900">Tapering Trouser Legs</h3>
+                      </div>
+                      <div className="md:w-2/3">
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          Avoid the bulky, outdated "ballooning" look. By tapering your trousers smoothly from knee to ankle, we create a slim, tailored profile that matches your natural posture and looks effortlessly polished.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Item 3 */}
+                    <div className="pb-4 flex flex-col md:flex-row gap-6">
+                      <div className="md:w-1/3">
+                        <span className="text-stone-400 text-xs font-bold tracking-widest block mb-1">SERVICE 03</span>
+                        <h3 className="text-xl font-serif font-bold text-stone-900">Sleeve Shortening</h3>
+                      </div>
+                      <div className="md:w-2/3">
+                        <p className="text-stone-600 text-sm font-light leading-relaxed">
+                          Proper arm alignment is key to looking balanced. Wearing jacket sleeves that are too long suggests you're wearing an oversized hand-me-down. Ideally, your shirt cuffs should peek out exactly 1/4" to 1/2" beyond your jacket hem.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-2">How can we help?</label>
-                    <select 
-                      value={selectedService}
-                      onChange={(e) => {
-                        setSelectedService(e.target.value);
-                        if (e.target.value !== 'Purchasing a Suit') {
-                          setSelectedSuitModel('');
-                        }
+                </div>
+
+                {/* Alterations CTA */}
+                <div className="text-center bg-stone-900 text-white p-8 md:p-12">
+                  <h3 className="text-2xl md:text-3xl font-serif font-bold mb-4">Let us do it right the first time.</h3>
+                  <p className="text-stone-400 text-sm font-light max-w-lg mx-auto mb-8">
+                    Ready to transform your clothes into custom garments? Stop by our studio with your clothing today, or book a styling session.
+                  </p>
+                  <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <button 
+                      onClick={() => {
+                        setCurrentView('home');
+                        setTimeout(() => {
+                          document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
                       }}
-                      className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors appearance-none"
+                      className="bg-white text-stone-900 px-6 py-3 font-medium hover:bg-stone-100 transition-colors"
                     >
-                      <option value="Purchasing a Suit">Purchasing a Suit</option>
-                      <option value="General Alterations / Hemming">General Alterations / Hemming</option>
-                      <option value="Personal Styling Consultation">Personal Styling Consultation</option>
-                      <option value="Other Inquiry">Other Inquiry</option>
-                    </select>
+                      Schedule a Fitting
+                    </button>
+                    <button 
+                      onClick={() => setCurrentView('home')}
+                      className="border border-stone-700 text-white px-6 py-3 font-medium hover:border-white transition-colors"
+                    >
+                      Return to Home
+                    </button>
                   </div>
                 </div>
 
-                {selectedSuitModel && (
-                  <div className="p-4 bg-stone-100 border border-stone-200 rounded-sm">
-                    <p className="text-sm font-medium text-stone-700 flex items-center justify-between">
-                      <span>{selectedSuitModel}</span>
-                      <button 
-                        type="button" 
-                        onClick={() => setSelectedSuitModel('')} 
-                        className="text-stone-400 hover:text-stone-900 text-xs"
-                      >
-                        Clear Selection
-                      </button>
-                    </p>
-                  </div>
-                )}
+              </div>
+            </section>
+          )}
 
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">Details</label>
-                  <textarea 
-                    rows="4" 
-                    className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
-                    placeholder="Tell us what you're looking for..."
-                  ></textarea>
+          {/* CONTACT SECTION */}
+          <section id="contact" className="py-24 bg-white border-t border-stone-200" ref={contactFormRef}>
+            <div className="max-w-7xl mx-auto px-6 md:px-12">
+              <div className="flex flex-col lg:flex-row gap-16">
+                
+                {/* Contact Info */}
+                <div className="w-full lg:w-1/3">
+                  <h2 className="text-4xl font-serif font-bold text-stone-900 mb-6">Visit the Shop</h2>
+                  <p className="text-stone-600 font-light mb-10">
+                    Drop by to browse our suit collection, get measured, or drop off garments for alteration. Walk-ins are always welcome.
+                  </p>
+                  
+                  <div className="space-y-8">
+                    <div className="flex items-start group">
+                      <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <MapPinIcon className="text-stone-700 group-hover:text-white transition-colors" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-stone-900 font-medium mb-1">Storefront & Studio</h4>
+                        <p className="text-stone-600 font-light text-sm">123 Tailor Ave.<br/>Style District, City 10012</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start group">
+                      <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <PhoneIcon className="text-stone-700 group-hover:text-white transition-colors" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-stone-900 font-medium mb-1">Call Us</h4>
+                        <p className="text-stone-600 font-light text-sm">+1 (555) 123-4567</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start group">
+                      <div className="w-10 h-10 bg-stone-50 flex items-center justify-center rounded-full mr-4 group-hover:bg-stone-900 transition-colors border border-stone-200">
+                        <MailIcon className="text-stone-700 group-hover:text-white transition-colors" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-stone-900 font-medium mb-1">Email</h4>
+                        <p className="text-stone-600 font-light text-sm">hello@stitch4fit.com</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="w-full bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-colors"
-                >
-                  Send Message
-                </button>
-              </form>
+                {/* Light Form */}
+                <div className="w-full lg:w-2/3 bg-stone-50 p-8 md:p-12 border border-stone-200 rounded-sm">
+                  <h3 className="text-2xl font-serif font-bold text-stone-900 mb-6">Send an Inquiry</h3>
+                  <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 mb-2">First Name</label>
+                        <input 
+                          type="text" 
+                          className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
+                          placeholder="John"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 mb-2">Last Name</label>
+                        <input 
+                          type="text" 
+                          className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
+                          placeholder="Doe"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 mb-2">Email Address</label>
+                        <input 
+                          type="email" 
+                          className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
+                          placeholder="john@example.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 mb-2">How can we help?</label>
+                        <select 
+                          value={selectedService}
+                          onChange={(e) => {
+                            setSelectedService(e.target.value);
+                            if (e.target.value !== 'Purchasing a Suit') {
+                              setSelectedSuitModel('');
+                            }
+                          }}
+                          className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors appearance-none"
+                        >
+                          <option value="Purchasing a Suit">Purchasing a Suit</option>
+                          <option value="General Alterations / Hemming">General Alterations / Hemming</option>
+                          <option value="Personal Styling Consultation">Personal Styling Consultation</option>
+                          <option value="Other Inquiry">Other Inquiry</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {selectedSuitModel && (
+                      <div className="p-4 bg-stone-100 border border-stone-200 rounded-sm">
+                        <p className="text-sm font-medium text-stone-700 flex items-center justify-between">
+                          <span>{selectedSuitModel}</span>
+                          <button 
+                            type="button" 
+                            onClick={() => setSelectedSuitModel('')} 
+                            className="text-stone-400 hover:text-stone-900 text-xs"
+                          >
+                            Clear Selection
+                          </button>
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-2">Details</label>
+                      <textarea 
+                        rows="4" 
+                        className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
+                        placeholder="Tell us what you're looking for..."
+                      ></textarea>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className="w-full bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-colors"
+                    >
+                      Send Message
+                    </button>
+                  </form>
+                </div>
+
+              </div>
             </div>
+          </section>
 
-          </div>
+          {/* FOOTER */}
+          <footer className="bg-stone-900 py-12">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center">
+              <button 
+                onClick={() => setCurrentView('home')} 
+                className="text-2xl font-serif font-bold tracking-wider text-white mb-6 md:mb-0 focus:outline-none"
+              >
+                STITCH<span className="text-stone-500 font-light">4</span>FIT
+              </button>
+              
+              <div className="flex space-x-6 mb-6 md:mb-0">
+                <a href="#" className="text-stone-400 hover:text-white transition-colors">
+                  <InstagramIcon size={22} />
+                </a>
+                <a href="#" className="text-stone-400 hover:text-white transition-colors">
+                  <FacebookIcon size={22} />
+                </a>
+              </div>
+
+              <div className="text-stone-500 text-sm font-light text-center md:text-right">
+                &copy; {new Date().getFullYear()} Stitch4Fit. All rights reserved. <br/>
+                Master Tailors & Clothiers.
+              </div>
+            </div>
+          </footer>
+
         </div>
-      </section>
+      );
+    }
 
-      {/* FOOTER */}
-      <footer className="bg-stone-900 py-12">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center">
-          <button 
-            onClick={() => setCurrentView('home')} 
-            className="text-2xl font-serif font-bold tracking-wider text-white mb-6 md:mb-0 focus:outline-none"
-          >
-            STITCH<span className="text-stone-500 font-light">4</span>FIT
-          </button>
-          
-          <div className="flex space-x-6 mb-6 md:mb-0">
-            <a href="#" className="text-stone-400 hover:text-white transition-colors">
-              <Instagram size={22} />
-            </a>
-            <a href="#" className="text-stone-400 hover:text-white transition-colors">
-              <Facebook size={22} />
-            </a>
-          </div>
-
-          <div className="text-stone-500 text-sm font-light text-center md:text-right">
-            &copy; {new Date().getFullYear()} Stitch4Fit. All rights reserved. <br/>
-            Master Tailors & Clothiers.
-          </div>
-        </div>
-      </footer>
-
-    </div>
-  );
-}
+    // Render the React App to the DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
