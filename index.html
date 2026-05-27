@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stitch4Fit | Master Tailors & Clothiers</title>
+  <title>Stitch4Fit | Master Tailors & Bespoke Clothiers</title>
   
   <!-- React 18 & Babel CDN (Allows JSX to run directly in the browser) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -94,14 +94,18 @@
       <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
     );
 
+    const RulerIcon = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21.3 8.11 15.89 2.7a1 1 0 0 0-1.41 0L2.7 14.48a1 1 0 0 0 0 1.41l5.41 5.41a1 1 0 0 0 1.42 0L21.3 9.52a1 1 0 0 0 0-1.41z"></path><path d="m5.64 12.85 2.12 2.12"></path><path d="m7.76 10.73 2.12 2.12"></path><path d="m9.88 8.61 2.12 2.12"></path><path d="m12 6.5 2.12 2.12"></path><path d="m14.12 4.38 2.12 2.12"></path></svg>
+    );
+
 
     // App Component
     function App() {
       const [isScrolled, setIsScrolled] = useState(false);
       const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
       const [currentView, setCurrentView] = useState('home'); // 'home' or 'alterations'
-      const [selectedService, setSelectedService] = useState('General Alterations / Hemming');
-      const [selectedSuitModel, setSelectedSuitModel] = useState('');
+      const [selectedService, setSelectedService] = useState('Bespoke Custom Suiting');
+      const [customInquiryDetails, setCustomInquiryDetails] = useState('');
 
       const contactFormRef = useRef(null);
 
@@ -120,7 +124,7 @@
       }, [currentView]);
 
       const navLinks = [
-        { name: 'Suit Collection', href: '#suits', view: 'home' },
+        { name: 'Custom Experience', href: '#bespoke-journey', view: 'home' },
         { name: 'Alterations Guide', action: () => setCurrentView('alterations') },
         { name: 'Our Craft', href: '#about', view: 'home' },
         { name: 'Contact', href: '#contact', view: 'home' },
@@ -141,10 +145,10 @@
         }
       };
 
-      const handleSuitSelect = (suitName) => {
+      const handleBeginCustomJourney = () => {
         setCurrentView('home');
-        setSelectedService('Purchasing a Suit');
-        setSelectedSuitModel(`Model Selected: ${suitName}`);
+        setSelectedService('Bespoke Custom Suiting');
+        setCustomInquiryDetails('I am interested in beginning a custom suit design. Let\'s schedule my physical measurement and fabric consultation.');
         setTimeout(() => {
           const contactSec = document.getElementById('contact');
           if (contactSec) {
@@ -152,33 +156,6 @@
           }
         }, 150);
       };
-
-      const suitCollection = [
-        {
-          id: 'modern-charcoal',
-          name: 'The Executive Charcoal',
-          price: '$199',
-          typicalRent: '$250/weekend',
-          image: 'https://images.unsplash.com/photo-1594938298596-70f594f62bce?auto=format&fit=crop&q=80&w=800',
-          description: 'A timeless, highly versatile classic woven from premium wool-blend. Engineered to breathe comfortably and maintain sharp lines through long workdays or special ceremonies.'
-        },
-        {
-          id: 'midnight-navy',
-          name: 'The Midnight Royal Navy',
-          price: '$219',
-          typicalRent: '$260/weekend',
-          image: 'https://images.unsplash.com/photo-1598808503742-dd34bd0444d9?auto=format&fit=crop&q=80&w=800',
-          description: 'Crisp, commanding, and tailored to frame a sleek, modern silhouette. Perfectly suited for leadership presentation, evening galas, or looking exceptionally sharp.'
-        },
-        {
-          id: 'sand-dune-linen',
-          name: 'The Sand Dune Linen',
-          price: '$189',
-          typicalRent: '$230/weekend',
-          image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800',
-          description: 'An unstructured, lightweight summer-weight fabric. Combines traditional tailoring precision with breathable luxury—ideal for warmer seasons and outdoor social gatherings.'
-        }
-      ];
 
       const bgPattern = {
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
@@ -283,27 +260,27 @@
                   
                   <div className="w-full lg:w-1/2 relative z-10 text-center lg:text-left">
                     <h2 className="text-stone-500 font-medium tracking-widest uppercase mb-4 text-sm">
-                      Master Tailors & Clothiers
+                      Master Tailors & Custom Clothiers
                     </h2>
                     <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 leading-tight mb-6">
-                      The Perfect Suit. <br /> The Perfect Fit.
+                      Custom Built. <br /> Made For You.
                     </h1>
                     <p className="text-lg text-stone-600 mb-10 max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
-                      Why rent when you can own? Discover our collection of premium suits, ready for everyday professional confidence or spontaneous milestones. Expertly altered in-house to fit you flawlessly.
+                      Stop renting template fits that compromise your presentation. Experience a suit designed organically around your movements, hand-measured and crafted to project absolute authority.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                      <a 
-                        href="#suits" 
-                        className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-all duration-300 flex items-center justify-center group text-center"
+                      <button 
+                        onClick={handleBeginCustomJourney}
+                        className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 rounded-none text-base font-medium transition-all duration-300 flex items-center justify-center group"
                       >
-                        Shop Suits
+                        Design Your Suit
                         <ArrowRightIcon className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
-                      </a>
+                      </button>
                       <button 
                         onClick={() => setCurrentView('alterations')}
                         className="w-full sm:w-auto border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 px-8 py-4 rounded-none text-base font-medium transition-colors flex items-center justify-center"
                       >
-                        View Tailoring Services
+                        Our Alterations Guide
                       </button>
                     </div>
                   </div>
@@ -312,7 +289,7 @@
                     <div className="absolute inset-0 bg-stone-200 translate-x-4 translate-y-4 rounded-sm"></div>
                     <img 
                       src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&q=80&w=1200" 
-                      alt="Elegant tailored suits" 
+                      alt="Elegant custom tailored suits lined up on a premium wooden rack" 
                       className="relative z-10 w-full h-[500px] object-cover rounded-sm shadow-xl"
                     />
                   </div>
@@ -329,21 +306,21 @@
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     {/* Service 1 */}
-                    <a 
-                      href="#suits"
-                      className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left block"
+                    <button 
+                      onClick={handleBeginCustomJourney}
+                      className="bg-stone-50 p-10 rounded-sm border border-stone-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left block focus:outline-none"
                     >
                       <div className="w-14 h-14 bg-white shadow-sm rounded-full flex items-center justify-center mb-6 group-hover:bg-stone-900 transition-colors border border-stone-200">
                         <ShoppingBagIcon className="text-stone-700 group-hover:text-white transition-colors" size={24} />
                       </div>
-                      <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Suit Sales</h3>
+                      <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Custom Suiting</h3>
                       <p className="text-stone-600 font-light leading-relaxed mb-4">
-                        Stop renting. We offer a wide selection of premium suits for purchase that are often more affordable than a single rental. Make a smart, permanent addition to your wardrobe.
+                        We don't do pre-made retail. Discover the power of a bespoke pattern mapped to your physical blueprint, customized down to the lapel, lining, and button structure.
                       </p>
                       <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
-                        Browse the Collection
+                        Begin Custom Consultation
                       </span>
-                    </a>
+                    </button>
 
                     {/* Service 2 (Clickable Interactivity) */}
                     <button 
@@ -361,7 +338,7 @@
                         <ArrowRightIcon size={18} className="ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                       </h3>
                       <p className="text-stone-600 font-light leading-relaxed mb-4">
-                        From our famous $10 trouser hemming to complex jacket restructuring. Click to view our comprehensive clothing alteration and customization guide.
+                        From our famous $10 trouser hemming to complex structural suit styling. Click to view our comprehensive garment alteration and customization guide.
                       </p>
                       <span className="text-sm font-semibold text-stone-900 underline group-hover:text-stone-600">
                         Explore Pricing & Guide
@@ -375,63 +352,94 @@
                       </div>
                       <h3 className="text-2xl font-serif font-bold text-stone-900 mb-3">Versatile Styling</h3>
                       <p className="text-stone-600 font-light leading-relaxed">
-                        Whether you need a sharp outfit for the office, a polished look for upscale social dinners, or a clean silhouette for daily wear, we ensure you project effortless confidence.
+                        Whether you need a sharp outfit for the boardroom, a structured jacket for formal dinners, or polished silhouettes for daily wear, we ensure you project absolute confidence.
                       </p>
                     </div>
                   </div>
                 </div>
               </section>
 
-              {/* SUIT COLLECTION GALLERY */}
-              <section id="suits" className="py-24 bg-stone-100/40 border-b border-stone-200 relative">
+              {/* BESPOKE CUSTOM JOURNEY SECTION (Replaces the pre-made retail shop section) */}
+              <section id="bespoke-journey" className="py-24 bg-stone-100/40 border-b border-stone-200 relative">
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                   <div className="text-center mb-16">
-                    <span className="text-xs uppercase tracking-widest text-stone-500 font-semibold block mb-2">OWN vs RENT</span>
-                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">The Suit Collection</h2>
+                    <span className="text-xs uppercase tracking-widest text-stone-500 font-semibold block mb-2">THE PROCESS</span>
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4">The Custom Suiting Experience</h2>
                     <div className="w-16 h-0.5 bg-stone-900 mx-auto"></div>
                     <p className="text-stone-600 font-light mt-4 max-w-xl mx-auto">
-                      A premium wardrobe shouldn't cost standard renting rates. Build permanent equity in your personal presentation.
+                      A bespoke garment isn't bought off a shelf; it's designed around your life. Discover our meticulous approach to drafting your personalized pattern.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {suitCollection.map((suit) => (
-                      <div key={suit.id} className="bg-white border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
-                        <div>
-                          <div className="relative h-96 overflow-hidden">
-                            <img 
-                              src={suit.image} 
-                              alt={suit.name} 
-                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                            />
-                          </div>
-                          <div className="p-8">
-                            <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">{suit.name}</h3>
-                            <p className="text-stone-500 text-sm font-light leading-relaxed mb-6">{suit.description}</p>
-                            
-                            <div className="grid grid-cols-2 border-t border-b border-stone-100 py-4 mb-6">
-                              <div>
-                                <span className="text-xs uppercase tracking-wider text-stone-400 block">Buy & Own</span>
-                                <span className="text-xl font-bold text-stone-900">{suit.price}</span>
-                              </div>
-                              <div className="border-l border-stone-100 pl-4">
-                                <span className="text-xs uppercase tracking-wider text-stone-400 block">Typical Rental</span>
-                                <span className="text-stone-500 text-sm line-through">{suit.typicalRent}</span>
-                              </div>
-                            </div>
-                          </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    {/* Stage 1 */}
+                    <div className="bg-white border border-stone-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="relative h-80 overflow-hidden">
+                          <img 
+                            src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800" 
+                            alt="Luxury custom fabric swatches being selected" 
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-102"
+                          />
+                          <div className="absolute top-4 left-4 bg-stone-900 text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">1</div>
                         </div>
-                        
-                        <div className="px-8 pb-8">
-                          <button 
-                            onClick={() => handleSuitSelect(suit.name)}
-                            className="w-full bg-stone-900 hover:bg-stone-800 text-white text-center py-3 text-sm font-medium transition-colors block"
-                          >
-                            Select for Fitting
-                          </button>
+                        <div className="p-8">
+                          <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">Fabric & Styling Selection</h3>
+                          <p className="text-stone-600 text-sm font-light leading-relaxed">
+                            Your suit begins with selection. Choose from hundreds of premium weight cloths, structured wools, and breathable linings. Together we coordinate details like lapel configurations, pocket styles, and button characteristics.
+                          </p>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Stage 2 */}
+                    <div className="bg-white border border-stone-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="relative h-80 overflow-hidden">
+                          <img 
+                            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800" 
+                            alt="Tailor measuring an arm with yellow measuring tape" 
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-102"
+                          />
+                          <div className="absolute top-4 left-4 bg-stone-900 text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">2</div>
+                        </div>
+                        <div className="p-8">
+                          <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">Anatomical Blueprinting</h3>
+                          <p className="text-stone-600 text-sm font-light leading-relaxed">
+                            We take detailed measurements mapping your exact shoulder slope, posture alignment, and arm extension. We construct a 2D canvas pattern designed exclusively around your natural physique.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stage 3 */}
+                    <div className="bg-white border border-stone-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="relative h-80 overflow-hidden">
+                          <img 
+                            src="https://images.unsplash.com/photo-1617331721458-bd3ce3e9be66?auto=format&fit=crop&q=80&w=800" 
+                            alt="Tailor handcrafting garment stitching detail" 
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-102"
+                          />
+                          <div className="absolute top-4 left-4 bg-stone-900 text-white text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center">3</div>
+                        </div>
+                        <div className="p-8">
+                          <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">Handcraft & Final Fitting</h3>
+                          <p className="text-stone-600 text-sm font-light leading-relaxed">
+                            Our master tailors sew, baste, and steam your suit to life. After a final in-person adjustment, your suit is modified to lay flat, fall cleanly, and emphasize your frame perfectly.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-center mt-12">
+                    <button 
+                      onClick={handleBeginCustomJourney}
+                      className="bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 text-sm font-medium transition-colors"
+                    >
+                      Begin Your Custom Blueprint
+                    </button>
                   </div>
                 </div>
               </section>
@@ -444,14 +452,14 @@
                       <div className="w-1/2 mt-12">
                          <img 
                           src="https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&q=80&w=600" 
-                          alt="Tailor threading needle" 
+                          alt="Tailor threading needle inside shop" 
                           className="w-full h-80 object-cover rounded-sm shadow-md"
                         />
                       </div>
                       <div className="w-1/2">
                         <img 
-                          src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600" 
-                          alt="Businessman in sharp suit" 
+                          src="https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=600" 
+                          alt="Detailed sleeve cuff with gold buttons" 
                           className="w-full h-96 object-cover rounded-sm shadow-xl"
                         />
                       </div>
@@ -463,15 +471,15 @@
                         Craftsmanship You Can Trust
                       </h2>
                       <p className="text-stone-600 text-lg font-light mb-6 leading-relaxed">
-                        Whether you're purchasing a brand new suit from our collection or bringing in your favorite pair of trousers for a quick hem, our philosophy remains the same: the fit is everything.
+                        Whether you are designing a full bespoke custom suit from raw cloth or dropping off your favorite trousers for a fast hem, our core philosophy remains intact: the fit is everything.
                       </p>
                       <p className="text-stone-600 text-lg font-light mb-8 leading-relaxed">
-                        We bridge the gap between premium menswear retail and traditional tailoring. Walk in to browse our suit selection, and walk out with a garment perfectly tailored to your exact measurements.
+                        We merge premium fabric selection with traditional heritage tailoring techniques. Walk into our studio to coordinate your fabrics and design elements, and walk out with clothing modeled entirely to you.
                       </p>
                       
                       <div className="flex items-center gap-4 border-l-2 border-stone-900 pl-4">
                         <p className="text-stone-800 font-serif italic text-lg">
-                          "A suit should never feel like a uniform; it should feel like it was made just for you."
+                          "A custom built suit should never feel restricting; it should represent the ultimate freedom of movement and posture."
                         </p>
                       </div>
                     </div>
@@ -515,12 +523,12 @@
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                   <img 
                     src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=800" 
-                    alt="Expert tailoring alignment" 
+                    alt="Master tailor lining up adjustments on a sleeve with tape measure" 
                     className="w-full h-80 object-cover rounded-sm shadow-md"
                   />
                   <img 
                     src="https://images.unsplash.com/photo-1617331721458-bd3ce3e9be66?auto=format&fit=crop&q=80&w=800" 
-                    alt="Suit materials and measuring tools" 
+                    alt="Luxury tailoring instruments, steel shears, threads, chalk and measuring tapes" 
                     className="w-full h-80 object-cover rounded-sm shadow-md"
                   />
                 </div>
@@ -668,7 +676,7 @@
                 <div className="w-full lg:w-1/3">
                   <h2 className="text-4xl font-serif font-bold text-stone-900 mb-6">Visit the Shop</h2>
                   <p className="text-stone-600 font-light mb-10">
-                    Drop by to browse our suit collection, get measured, or drop off garments for alteration. Walk-ins are always welcome.
+                    Drop by to schedule custom suit design consulting, get measured, or drop off garments for alteration. Walk-ins are always welcome.
                   </p>
                   
                   <div className="space-y-8">
@@ -740,15 +748,10 @@
                         <label className="block text-sm font-medium text-stone-700 mb-2">How can we help?</label>
                         <select 
                           value={selectedService}
-                          onChange={(e) => {
-                            setSelectedService(e.target.value);
-                            if (e.target.value !== 'Purchasing a Suit') {
-                              setSelectedSuitModel('');
-                            }
-                          }}
+                          onChange={(e) => setSelectedService(e.target.value)}
                           className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors appearance-none"
                         >
-                          <option value="Purchasing a Suit">Purchasing a Suit</option>
+                          <option value="Bespoke Custom Suiting">Bespoke Custom Suiting</option>
                           <option value="General Alterations / Hemming">General Alterations / Hemming</option>
                           <option value="Personal Styling Consultation">Personal Styling Consultation</option>
                           <option value="Other Inquiry">Other Inquiry</option>
@@ -756,25 +759,12 @@
                       </div>
                     </div>
 
-                    {selectedSuitModel && (
-                      <div className="p-4 bg-stone-100 border border-stone-200 rounded-sm">
-                        <p className="text-sm font-medium text-stone-700 flex items-center justify-between">
-                          <span>{selectedSuitModel}</span>
-                          <button 
-                            type="button" 
-                            onClick={() => setSelectedSuitModel('')} 
-                            className="text-stone-400 hover:text-stone-900 text-xs"
-                          >
-                            Clear Selection
-                          </button>
-                        </p>
-                      </div>
-                    )}
-
                     <div>
                       <label className="block text-sm font-medium text-stone-700 mb-2">Details</label>
                       <textarea 
                         rows="4" 
+                        value={customInquiryDetails}
+                        onChange={(e) => setCustomInquiryDetails(e.target.value)}
                         className="w-full bg-white border border-stone-200 rounded-none px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
                         placeholder="Tell us what you're looking for..."
                       ></textarea>
@@ -814,7 +804,7 @@
 
               <div className="text-stone-500 text-sm font-light text-center md:text-right">
                 &copy; {new Date().getFullYear()} Stitch4Fit. All rights reserved. <br/>
-                Master Tailors & Clothiers.
+                Master Tailors & Custom Clothiers.
               </div>
             </div>
           </footer>
